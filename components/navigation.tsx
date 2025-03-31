@@ -22,7 +22,7 @@ export default function Navigation() {
       active: pathname === "/gallery",
     },
     {
-      name: "Мої зображення",
+      name: "Мої SVG",
       href: "/my-images",
       icon: User,
       active: pathname === "/my-images",

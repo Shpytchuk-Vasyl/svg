@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { X, RotateCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { SvgViewer } from "@/components/svg-viewer";
 import { STYLES } from "../chat/chat-input";
+import { GalleryImageMenu } from "./gallery-image-menu";
 
 type GalleryImageProps = {
   id: string;
@@ -19,6 +18,7 @@ type GalleryImageProps = {
   style: string;
   created_at: string;
   image_url: string;
+  initial?: boolean;
 };
 
 export function GalleryImage({
@@ -28,8 +28,9 @@ export function GalleryImage({
   style,
   created_at,
   image_url,
+  initial,
 }: GalleryImageProps) {
-  const [isSelected, setIsSelected] = useState(false);
+  const [isSelected, setIsSelected] = useState(initial);
   const [key, setKey] = useState(0); // для перезапуску анімації
 
   return (
@@ -41,26 +42,25 @@ export function GalleryImage({
         <img
           src={image_url || "/placeholder.png"}
           alt={prompt_text}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover border-2 border-transparent hover:border-primary"
         />
       </div>
 
       <Dialog open={isSelected} onOpenChange={setIsSelected}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+          <DialogHeader className="flex flex-row gap-4 items-center space-y-0">
+            <GalleryImageMenu
+              id={id}
+              svg_url={svg_url}
+              image_url={image_url}
+              prompt_text={prompt_text}
+              onReload={() => setKey((prev) => prev + 1)}
+            />
             <DialogTitle>Деталі</DialogTitle>
           </DialogHeader>
 
           <div className="p-4">
             <div className="aspect-square w-full bg-background/50 rounded overflow-hidden mb-4 relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 z-10"
-                onClick={() => setKey((prev) => prev + 1)}
-              >
-                <RotateCw className="h-4 w-4" />
-              </Button>
               <SvgViewer reload={key} url={svg_url} className="w-full h-full" />
             </div>
 
@@ -72,43 +72,6 @@ export function GalleryImage({
               <p className="text-sm text-muted-foreground">
                 Створено: {new Date(created_at).toLocaleString("uk-UA")}
               </p>
-              <div className="flex gap-2 flex-wrap">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.open(svg_url, "_blank")}
-                >
-                  Відкрити SVG
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = svg_url;
-                    link.download = `svg-${id}.svg`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                >
-                  Завантажити SVG
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = image_url;
-                    link.download = `image-${id}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                >
-                  Завантажити PNG
-                </Button>
-              </div>
             </div>
           </div>
         </DialogContent>

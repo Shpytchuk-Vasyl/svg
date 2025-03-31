@@ -22,6 +22,7 @@ type GalleryProps = {
   searchParams: {
     page?: string;
     search?: string;
+    initial?: string;
   };
   isUserGallery?: boolean;
   userId?: string;
@@ -37,6 +38,7 @@ export async function Gallery({
   const search = searchParams.search || "";
   const start = (page - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE - 1;
+  const initialSVg = searchParams.initial || "";
 
   let query = supabase.from("generated_images").select(
     `
@@ -96,7 +98,7 @@ export async function Gallery({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {images.map((image) => (
               <GalleryImage
                 key={image.id}
@@ -106,6 +108,7 @@ export async function Gallery({
                 style={image.prompts?.style}
                 created_at={image.created_at}
                 image_url={image.prompts?.image_url || ""}
+                initial={initialSVg === image.id}
               />
             ))}
           </div>
