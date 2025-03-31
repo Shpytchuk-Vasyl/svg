@@ -35,7 +35,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SupabaseProvider>
             <main className="flex-1 pb-16">
-              <div className="container mx-auto px-4 py-6">{children}</div>
+              <div className="flex flex-col flex-1 h-[calc(100dvh-4rem)] container mx-auto px-4 py-6">
+                {children}
+              </div>
             </main>
             <Navigation />
             <Toaster />

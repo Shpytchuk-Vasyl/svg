@@ -40,7 +40,7 @@ export function AuthCheck() {
       <p className="text-muted-foreground mb-6">
         Ви повинні бути зареєстровані для перегляду своїх зображень
       </p>
-      <Button onClick={handleLogin} disabled={isLoading}>
+      <Button onClick={handleLogin} disabled={isLoading} variant="outline">
         {isLoading ? "Вхід..." : "Увійти з Google"}
       </Button>
     </div>
