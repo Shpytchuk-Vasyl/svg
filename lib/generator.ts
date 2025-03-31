@@ -2,10 +2,10 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 
 const URLs = [
-  "https://api.svg.io/v1",
-  "https://vercel-proxy-git-master-shpytchuk-vasyls-projects.vercel.app/https://api.svg.io/v1",
-  "https://vercel-proxy-git-stag-shpytchuk-vasyls-projects.vercel.app/https://api.svg.io/v1",
-];
+  "https://backend.svg.io",
+  "https://vercel-proxy-git-master-shpytchuk-vasyls-projects.vercel.app/https://backend.svg.io",
+  "https://vercel-proxy-git-stag-shpytchuk-vasyls-projects.vercel.app/https://backend.svg.io",
+];  
 
 export type ImagePostResponse = {
   id: string;
