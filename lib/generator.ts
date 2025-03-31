@@ -1,11 +1,15 @@
 "use client";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { translateToEnglish } from "./translate";
 
 const URLs = [
-  "https://backend.svg.io",
-  "https://vercel-proxy-git-master-shpytchuk-vasyls-projects.vercel.app/https://backend.svg.io",
-  "https://vercel-proxy-git-stag-shpytchuk-vasyls-projects.vercel.app/https://backend.svg.io",
-];  
+  // "https://backend.svg.io", i dont know why get request also dont work
+  "https://vercel-proxy-git-test-shpytchuk-vasyls-projects.vercel.app",
+  "https://vercel-proxy-git-master-shpytchuk-vasyls-projects.vercel.app",
+  "https://vercel-proxy-git-stag-shpytchuk-vasyls-projects.vercel.app",
+  "/api",
+  "https://vercel-proxy-y9sj.onrender.com",
+];
 
 export type ImagePostResponse = {
   id: string;
@@ -32,26 +36,27 @@ export async function generateSVG(
   } = await supabase.auth.getSession();
 
   try {
-    const response = await fetch(
-      URLs[Math.floor(Math.random() * URLs.length)] + "/generate-image",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userPrompt: prompt,
-          negativePrompt: "",
-          style: style || "FLAT_VECTOR",
-          initialImage: imageUrl || null,
-          initialImageType: imageUrl ? "PNG" : null,
-        }),
-      }
-    );
+    let index = Math.floor(Math.random() * URLs.length);
+
+    const translatedPrompt = await translateToEnglish(prompt);
+
+    const response = await fetch(URLs[index] + "/generate-image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userPrompt: translatedPrompt,
+        userNegativePrompt: "",
+        style: style || "FLAT_VECTOR",
+        initialImage: imageUrl || null,
+        initialImageType: imageUrl ? "PNG" : null,
+      }),
+    });
 
     const result = await response.json();
 
-    if (!result.success) {
+    if (!result?.success || response.status !== 200) {
       if (retry < 2) {
         return await generateSVG(prompt, style, imageUrl, supabase, retry + 1);
       }
@@ -75,14 +80,13 @@ export async function generateSVG(
       .single();
 
     const imageInfo = await fetch(
-      URLs[Math.floor(Math.random() * URLs.length)] +
-        "/get-image/" +
-        generatedImage.id
+      URLs[index] + "/get-image/" + generatedImage.id
     );
 
     const imageInfoJSON = await imageInfo.json();
-    const imageInfoData = imageInfoJSON.data[0] as ImageGetResponse;
+    const imageInfoData = imageInfoJSON.data as ImageGetResponse;
 
+    console.log(imageInfoData);
     const { data: imageData, error: imageError } = await supabase
       .from("generated_images")
       .insert({
@@ -93,6 +97,7 @@ export async function generateSVG(
       .single();
 
     if (imageError || promptError) {
+      console.log(imageError, promptError);
       throw new Error();
     }
 

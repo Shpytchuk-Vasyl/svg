@@ -1,9 +1,9 @@
 "use client";
 
-import { Loader2, MessagesSquare } from "lucide-react";
+import { Loader2, MessagesSquare, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Message } from "@/hooks/use-chat-messages";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { SvgViewer } from "../svg-viewer";
 interface ChatMessagesProps {
@@ -53,13 +53,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
             )}
           >
             {message.type === "svg" ? (
-              <div className="space-y-2">
-                <p className="text-sm">{message.content}</p>
-                <SvgViewer
-                  url={message.svgUrl || "/placeholder.svg"}
-                  className="w-full h-full"
-                />
-              </div>
+              <SVG message={message} />
             ) : (
               <p
                 onClick={() => {
@@ -67,6 +61,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
                   toast({
                     title: "Скопійовано",
                     description: `Текст "${message.content}" був скопійований в буфер обміну`,
+                    variant: "default",
                   });
                 }}
               >
@@ -85,3 +80,25 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
     </div>
   );
 }
+
+const SVG = ({ message }: { message: Message }) => {
+  const [key, setKey] = useState(1);
+  return (
+    <div className="space-y-2">
+      <p className="text-sm flex items-center justify-between">
+        {message.content}
+        <RotateCw
+          className="w-4 h-4"
+          onClick={() => {
+            setKey(key + 1);
+          }}
+        />
+      </p>
+      <SvgViewer
+        reload={key}
+        url={message.svgUrl || "/placeholder.svg"}
+        className="w-full h-full"
+      />
+    </div>
+  );
+};

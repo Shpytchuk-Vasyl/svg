@@ -38,7 +38,7 @@ export function GalleryImage({
         onClick={() => setIsSelected(true)}
       >
         <img
-          src={svg_url || "/placeholder.svg"}
+          src={image_url || "/placeholder.png"}
           alt={prompt_text}
           className="w-full h-full object-cover"
         />
@@ -60,7 +60,7 @@ export function GalleryImage({
               >
                 <RotateCw className="h-4 w-4" />
               </Button>
-              <SvgViewer key={key} url={svg_url} className="w-full h-full" />
+              <SvgViewer reload={key} url={svg_url} className="w-full h-full" />
             </div>
 
             <div className="space-y-2">

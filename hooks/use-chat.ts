@@ -36,7 +36,7 @@ export function useChat() {
         id: response.id,
         type: "svg",
         content: input,
-        svgUrl: response.svgUrl,
+        svgUrl: response.svg_s3_url,
       });
 
       setImageUrl(null);

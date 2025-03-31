@@ -6,9 +6,10 @@ import "@/styles/globals.css";
 type SvgViewerProps = {
   url: string;
   className?: string;
+  reload?: string | number;
 };
 
-export function SvgViewer({ url, className }: SvgViewerProps) {
+export function SvgViewer({ url, className, reload }: SvgViewerProps) {
   const [svgContent, setSvgContent] = useState<string>("");
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -61,7 +62,7 @@ export function SvgViewer({ url, className }: SvgViewerProps) {
         path.style.animation = "drawStroke 6s ease-in-out";
       });
     }, 100);
-  }, [svgContent]);
+  }, [svgContent, reload]);
 
   if (!svgContent) {
     return <div className="animate-pulse bg-muted w-full h-full" />;
