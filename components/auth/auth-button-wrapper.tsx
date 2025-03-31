@@ -1,12 +1,11 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { AuthButton } from "./auth-button";
+import { createServerClient } from "@/lib/supabase-server";
 
 export async function AuthButtonWrapper() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return <AuthButton user={user} />;
+  return <AuthButton user={user} supabase={supabase} />;
 }

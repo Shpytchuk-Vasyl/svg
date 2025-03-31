@@ -5,12 +5,18 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "@/lib/database.types";
 
-export function AuthButton({ user }: { user: any }) {
+export function AuthButton({
+  user,
+  supabase,
+}: {
+  user: any;
+  supabase: SupabaseClient<Database>;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const supabase = createClientComponentClient();
 
   const handleLogin = async () => {
     setIsLoading(true);
