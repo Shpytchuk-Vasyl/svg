@@ -4,6 +4,7 @@ import { translateToEnglish } from "./translate";
 
 const URLs = [
   // "https://backend.svg.io", i dont know why get request also dont work
+  "https://api.svg.io",
   "https://vercel-proxy-git-test-shpytchuk-vasyls-projects.vercel.app",
   "https://vercel-proxy-git-master-shpytchuk-vasyls-projects.vercel.app",
   "https://vercel-proxy-git-stag-shpytchuk-vasyls-projects.vercel.app",
@@ -38,7 +39,8 @@ export async function generateSVG(
   } = await supabase.auth.getSession();
 
   try {
-    let index = Math.floor(Math.random() * URLs.length);
+    let index = 0;
+    if (retry) index = Math.floor(Math.random() * URLs.length);
 
     const translatedPrompt = await translateToEnglish(prompt);
 
@@ -62,7 +64,9 @@ export async function generateSVG(
       if (retry < 2) {
         return await generateSVG(prompt, style, imageUrl, supabase, retry + 1);
       }
-      throw new Error();
+      throw new Error(
+        "Швидше за все сервіс для генерації заблокував вашу IP адресу. Якщо ви використовуєте мобільний інтернет, увімкніть режим польоту на кілька хвилин - це змінить вашу IP адресу. Також можна використати VPN або почекати до завтра. Блокування діє приблизно 24 години."
+      );
     }
 
     const generatedImage = result.data[0] as ImagePostResponse;
@@ -81,9 +85,7 @@ export async function generateSVG(
       .select()
       .single();
 
-    const imageInfo = await fetch(
-      URLs[index] + "/get-image/" + generatedImage.id
-    );
+    const imageInfo = await fetch(`/api/get-image/${generatedImage.id}`);
 
     const imageInfoJSON = await imageInfo.json();
     const imageInfoData = imageInfoJSON.data as ImageGetResponse;

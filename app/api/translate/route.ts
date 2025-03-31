@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ text });
     }
 
-    const result = await translator.translateText(text, null, "en-US");
+    const result = await translator.translateText(text, "uk", "en-GB");
     return NextResponse.json({
       text: Array.isArray(result) ? result[0].text : result.text,
     });
