@@ -7,5 +7,5 @@ export async function AuthButtonWrapper() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return <AuthButton user={user} supabase={supabase} />;
+  return <AuthButton user={user} />;
 }
