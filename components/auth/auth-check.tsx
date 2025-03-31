@@ -2,32 +2,41 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSupabase } from "@/components/supabase-provider";
 import { useToast } from "@/hooks/use-toast";
+import { useSupabase } from "@/components/supabase-provider";
 
 export function AuthCheck() {
-  const { supabase } = useSupabase();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { supabase } = useSupabase();
 
   const handleLogin = async () => {
     setIsLoading(true);
 
     try {
-      await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/my-images`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/my-images`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (error) {
       console.error("Error signing in:", error);
       toast({
         title: "Помилка при вході",
-        description: "Помилка при вході",
+        description:
+          error instanceof Error ? error.message : "Помилка при вході",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };

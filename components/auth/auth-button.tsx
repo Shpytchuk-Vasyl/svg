@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabase } from "../supabase-provider";
 
 export function AuthButton({ user }: { user: any }) {
