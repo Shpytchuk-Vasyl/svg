@@ -10,14 +10,15 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SVG для тебе",
-  description: "Створюй красиві анімовані SVG для себе",
+  title: "Love You",
+  description: "Створюй красиві анімовані SVG",
   manifest: "/manifest.json",
   themeColor: "#ffffff",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   icons: {
     icon: "/logo.svg",
   },
+  authors: [{ name: "Vasyl", url: "https://github.com/Shpytchuk-Vasyl" }],
 };
 
 export default function RootLayout({

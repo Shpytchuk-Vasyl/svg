@@ -1,7 +1,7 @@
 {
-  "name": "SVG Generator",
-  "short_name": "SVG Gen",
-  "description": "Generate beautiful SVG images with AI",
+  "name": "Love You",
+  "short_name": "Love You",
+  "description": "Створюй красиві анімовані SVG",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
