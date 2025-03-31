@@ -9,6 +9,8 @@ const URLs = [
   "https://vercel-proxy-git-stag-shpytchuk-vasyls-projects.vercel.app",
   "/api",
   "https://vercel-proxy-y9sj.onrender.com",
+  "https://vercel-proxy-1.onrender.com",
+  "https://vercel-proxy-2.onrender.com",
 ];
 
 export type ImagePostResponse = {
