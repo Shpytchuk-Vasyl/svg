@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SvgViewer } from "@/components/svg-viewer";
+import { STYLES } from "../chat/chat-input";
 
 type GalleryImageProps = {
   id: string;
@@ -45,9 +46,9 @@ export function GalleryImage({
       </div>
 
       <Dialog open={isSelected} onOpenChange={setIsSelected}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>SVG Деталі</DialogTitle>
+            <DialogTitle>Деталі</DialogTitle>
           </DialogHeader>
 
           <div className="p-4">
@@ -66,12 +67,12 @@ export function GalleryImage({
             <div className="space-y-2">
               <p className="font-medium">{prompt_text}</p>
               <p className="text-sm text-muted-foreground">
-                Стиль: {style.replace(/_/g, " ").toLowerCase()}
+                Стиль: {STYLES.find((s) => s.value === style)?.label}
               </p>
               <p className="text-sm text-muted-foreground">
-                Створено: {new Date(created_at).toLocaleString()}
+                Створено: {new Date(created_at).toLocaleString("uk-UA")}
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   size="sm"

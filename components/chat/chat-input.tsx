@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const STYLES = [
+export const STYLES = [
   { value: "FLAT_VECTOR", label: "Плоский вектор" },
   { value: "FLAT_VECTOR_OUTLINE", label: "Контурний вектор" },
   { value: "FLAT_VECTOR_SILHOUETTE", label: "Силует" },
