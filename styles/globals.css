@@ -92,3 +92,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+@keyframes drawStroke {
+	0% {
+		fill: transparent;
+		stroke: black;
+	}
+	67% {	
+		fill: transparent;	
+		stroke: black;
+		stroke-dashoffset: 0;
+	}
+	100% {
+		fill: black;
+		stroke-dashoffset: 0;
+	}
+}
+

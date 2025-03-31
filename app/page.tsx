@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { ChatInterface } from "@/components/chat-interface";
-
+import { AuthButtonWrapper } from "@/components/auth-button-wrapper";
+import Image from "next/image";
 export const metadata: Metadata = {
-  title: "SVG Generator - Create",
-  description: "Generate beautiful SVG images with AI",
+  title: "Головна сторінка",
+  description: "Головна сторінка, де ви можете створювати SVG для себе",
 };
 
 export default function HomePage() {
   return (
-    <div className="container max-w-md mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-center mb-6">SVG для тебе</h1>
+    <>
+      <div className="flex justify-between items-center">
+        <Image src="/logo.svg" alt="logo" width={40} height={40} />
+        <AuthButtonWrapper />
+      </div>
       <ChatInterface />
-    </div>
+    </>
   );
 }

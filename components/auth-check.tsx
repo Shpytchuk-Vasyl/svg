@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { useSupabase } from "@/components/supabase-provider"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useSupabase } from "@/components/supabase-provider";
+import { useToast } from "@/hooks/use-toast";
 
 export function AuthCheck() {
-  const { supabase } = useSupabase()
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const { supabase } = useSupabase();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleLogin = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       await supabase.auth.signInWithOAuth({
@@ -19,22 +19,30 @@ export function AuthCheck() {
         options: {
           redirectTo: `${window.location.origin}/my-images`,
         },
-      })
+      });
     } catch (error) {
-      console.error("Error signing in:", error)
+      console.error("Error signing in:", error);
+      toast({
+        title: "Помилка при вході",
+        description: "Помилка при вході",
+        variant: "destructive",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
-      <h2 className="text-xl font-semibold mb-4">Sign in to view your images</h2>
-      <p className="text-muted-foreground mb-6">You need to be signed in to view your personal gallery</p>
+      <h2 className="text-xl font-semibold mb-4">
+        Зареєструйтеся для перегляду своїх зображень
+      </h2>
+      <p className="text-muted-foreground mb-6">
+        Ви повинні бути зареєстровані для перегляду своїх зображень
+      </p>
       <Button onClick={handleLogin} disabled={isLoading}>
-        {isLoading ? "Signing in..." : "Sign in with Google"}
+        {isLoading ? "Вхід..." : "Увійти з Google"}
       </Button>
     </div>
-  )
+  );
 }
-

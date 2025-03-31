@@ -20,11 +20,11 @@ type Message = {
 }
 
 const STYLES = [
-  { value: "FLAT_VECTOR", label: "Flat Vector" },
-  { value: "FLAT_VECTOR_OUTLINE", label: "Outline" },
-  { value: "FLAT_VECTOR_SILHOUETTE", label: "Silhouette" },
-  { value: "FLAT_VECTOR_ONE_LINE_ART", label: "One Line Art" },
-  { value: "FLAT_VECTOR_LINE_ART", label: "Line Art" },
+  { value: "FLAT_VECTOR", label: "Плоский вектор" },
+  { value: "FLAT_VECTOR_OUTLINE", label: "Контурний вектор" },
+  { value: "FLAT_VECTOR_SILHOUETTE", label: "Силует" },
+  { value: "FLAT_VECTOR_ONE_LINE_ART", label: "Один лінійний вектор" },
+  { value: "FLAT_VECTOR_LINE_ART", label: "Лінійний вектор" },
 ]
 
 export function ChatInterface() {
@@ -32,7 +32,7 @@ export function ChatInterface() {
     {
       id: "welcome",
       type: "system",
-      content: "What would you like to draw today?",
+      content: "Що ви хочете намалювати сьогодні?",
     },
   ])
   const [input, setInput] = useState("")
@@ -106,13 +106,13 @@ export function ChatInterface() {
         {
           id: `error-${Date.now()}`,
           type: "system",
-          content: `Error: ${error instanceof Error ? error.message : "Failed to generate SVG. Please try again."}`,
+          content: `Помилка: ${error instanceof Error ? error.message : "Не вдалося згенерувати SVG. Будь ласка, спробуйте ще раз."}`,
         },
       ])
 
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to generate SVG. Please try again.",
+        title: "Помилка",
+        description: error instanceof Error ? error.message : "Не вдалося згенерувати SVG. Будь ласка, спробуйте ще раз.",
         variant: "destructive",
       })
     } finally {
@@ -126,8 +126,8 @@ export function ChatInterface() {
 
     if (!file.type.startsWith("image/")) {
       toast({
-        title: "Invalid file",
-        description: "Please upload an image file",
+        title: "Недійсний файл",
+        description: "Будь ласка, завантажте зображення",
         variant: "destructive",
       })
       return
@@ -141,7 +141,7 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-180px)]">
+    <div className="flex flex-col h-[calc(100vh-210px)]">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div key={message.id} className={cn("flex", message.type === "user" ? "justify-end" : "justify-start")}>
@@ -193,7 +193,7 @@ export function ChatInterface() {
         <div className="flex gap-2 mb-2">
           <Select value={style} onValueChange={setStyle}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select style" />
+              <SelectValue placeholder="Виберіть стиль" />
             </SelectTrigger>
             <SelectContent>
               {STYLES.map((style) => (
@@ -214,7 +214,7 @@ export function ChatInterface() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Describe what you want to draw..."
+            placeholder="Опишіть що ви хочете намалювати..."
             disabled={isLoading}
             className="flex-1"
           />

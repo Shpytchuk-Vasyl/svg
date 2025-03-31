@@ -1,117 +1,124 @@
-"use client"
-
-import { useState } from "react"
-import { Search, X } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { GalleryImage } from "./gallery-image";
+import { GallerySearch } from "@/components/gallery-search";
+import { GalleryPagination } from "@/components/gallery-pagination";
+import { createServerClient } from "@/lib/supabase-server";
 
 type GalleryImage = {
-  id: string
-  svg_url: string
-  created_at: string
+  id: string;
+  svg_url: string;
+  created_at: string;
   prompts: {
-    id: string
-    prompt_text: string
-    style: string
-    user_id: string | null
+    id: string;
+    prompt_text: string;
+    image_url: string | null;
+    style: string;
+    user_id: string | null;
+  };
+};
+
+const ITEMS_PER_PAGE = 12;
+
+type GalleryProps = {
+  searchParams: {
+    page?: string;
+    search?: string;
+  };
+  isUserGallery?: boolean;
+  userId?: string;
+};
+
+export async function Gallery({
+  searchParams,
+  isUserGallery = false,
+  userId,
+}: GalleryProps) {
+  const supabase = createServerClient();
+  const page = Number(searchParams.page) || 1;
+  const search = searchParams.search || "";
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE - 1;
+
+  let query = supabase.from("generated_images").select(
+    `
+      id,
+      svg_url,
+      created_at,
+      prompts!inner (
+        id,
+        prompt_text,
+        style,
+        image_url,
+        user_id
+      )
+    `,
+    { count: "exact" }
+  );
+
+  if (isUserGallery && userId) {
+    query = query.eq("prompts.user_id", userId);
   }
-}
 
-export function Gallery({ images }: { images: GalleryImage[] }) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
+  if (search) {
+    query = query.ilike("prompts.prompt_text", `%${search}%`);
+  }
 
-  const filteredImages = searchTerm
-    ? images.filter((img) => img.prompts.prompt_text.toLowerCase().includes(searchTerm.toLowerCase()))
-    : images
+  const {
+    data: images,
+    count,
+    error,
+  } = (await query
+    .order("created_at", { ascending: false })
+    .range(start, end)) as {
+    data: GalleryImage[] | null;
+    count: number | null;
+    error: any;
+  };
+
+  if (error) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        ОЙ, щось пішло не так
+        <br />
+        Перезавантажте сторінку будь-ласка
+      </div>
+    );
+  }
+
+  const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
   return (
-    <div>
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          type="search"
-          placeholder="Search images..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+    <div className="space-y-4">
+      <GallerySearch search={search} />
 
-      {filteredImages.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">No images found</div>
+      {!images || images.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          {search ? "Зображень не знайдено" : "Ще немає зображень"}
+        </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
-          {filteredImages.map((image) => (
-            <div
-              key={image.id}
-              className="aspect-square rounded-lg overflow-hidden border cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => setSelectedImage(image)}
-            >
-              <img
-                src={image.svg_url || "/placeholder.svg"}
-                alt={image.prompts.prompt_text}
-                className="w-full h-full object-cover"
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            {images.map((image) => (
+              <GalleryImage
+                key={image.id}
+                id={image.id}
+                svg_url={image.svg_url}
+                prompt_text={image.prompts?.prompt_text}
+                style={image.prompts?.style}
+                created_at={image.created_at}
+                image_url={image.prompts?.image_url || ""}
               />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {selectedImage && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-2xl w-full bg-background rounded-lg shadow-lg">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 z-10"
-              onClick={() => setSelectedImage(null)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-
-            <div className="p-4">
-              <div className="aspect-square w-full bg-background/50 rounded overflow-hidden mb-4">
-                <img
-                  src={selectedImage.svg_url || "/placeholder.svg"}
-                  alt={selectedImage.prompts.prompt_text}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <p className="font-medium">{selectedImage.prompts.prompt_text}</p>
-                <p className="text-sm text-muted-foreground">
-                  Style: {selectedImage.prompts.style.replace(/_/g, " ").toLowerCase()}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Created: {new Date(selectedImage.created_at).toLocaleString()}
-                </p>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => window.open(selectedImage.svg_url, "_blank")}>
-                    Open SVG
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const link = document.createElement("a")
-                      link.href = selectedImage.svg_url
-                      link.download = `svg-${selectedImage.id}.svg`
-                      document.body.appendChild(link)
-                      link.click()
-                      document.body.removeChild(link)
-                    }}
-                  >
-                    Download
-                  </Button>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
+
+          {totalPages > 1 && (
+            <GalleryPagination
+              currentPage={page}
+              totalPages={totalPages}
+              search={search}
+            />
+          )}
+        </>
       )}
     </div>
-  )
+  );
 }
-
