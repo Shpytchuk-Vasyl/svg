@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ImagePlus, Send, Loader2, Plus, X } from "lucide-react";
+import { ImagePlus, Send, Loader2, Plus, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -38,6 +38,7 @@ interface ChatInputProps {
     e: React.ChangeEvent<HTMLInputElement>,
     afterFileLoad: () => void
   ) => void;
+  onClearChat: () => void;
 }
 
 export function ChatInput({
@@ -50,6 +51,7 @@ export function ChatInput({
   isLoading,
   onSubmit,
   onFileChange,
+  onClearChat,
 }: ChatInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -58,8 +60,8 @@ export function ChatInput({
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-16 bg-gradient-to-t from-background to-background/0 pt-4">
-      <div className="mx-auto max-w-4xl px-4 pb-4">
+    <div className="sticky inset-x-0 bottom-0 bg-gradient-to-t from-background to-background/0 pt-4">
+      <div className="mx-auto max-w-4xl">
         {imageUrl && (
           <div className="mb-4 relative size-16 rounded-lg overflow-hidden border animate-in zoom-in duration-300">
             <img
@@ -107,11 +109,21 @@ export function ChatInput({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full"
+                  className="w-full justify-start"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <ImagePlus className="h-4 w-4 mr-2" />
                   Завантажити зображення
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={onClearChat}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Очистити чат
                 </Button>
               </div>
             </PopoverContent>

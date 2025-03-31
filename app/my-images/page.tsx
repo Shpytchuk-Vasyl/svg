@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Gallery } from "@/components/gallery";
+import { Gallery } from "@/components/gallery/gallery";
 import { createServerClient } from "@/lib/supabase-server";
-import { AuthCheck } from "@/components/auth-check";
+import { AuthCheck } from "@/components/auth/auth-check";
 
 export const metadata: Metadata = {
   title: "Мої зображення",

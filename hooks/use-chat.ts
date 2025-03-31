@@ -1,20 +1,18 @@
+"use client";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-
-export type Message = {
-  id: string;
-  type: "system" | "user" | "svg";
-  content: string;
-  svgUrl?: string;
-};
+import { useChatMessages } from "./use-chat-messages";
+import { generateSVG } from "@/lib/generator";
+import { useSupabase } from "@/components/supabase-provider";
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages = [], addMessage, clearMessages } = useChatMessages();
   const [input, setInput] = useState("");
   const [style, setStyle] = useState("FLAT_VECTOR");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { supabase } = useSupabase();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,55 +25,33 @@ export function useChat() {
       content: input,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    addMessage(userMessage);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/generate-svg", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: input,
-          style,
-          imageUrl,
-        }),
+      const response = await generateSVG(input, style, imageUrl, supabase);
+
+      addMessage({
+        id: response.id,
+        type: "svg",
+        content: input,
+        svgUrl: response.svgUrl,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate SVG");
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: data.id,
-          type: "svg",
-          content: input,
-          svgUrl: data.svgUrl,
-        },
-      ]);
 
       setImageUrl(null);
     } catch (error) {
-      console.error("Error generating SVG:", error);
+      setInput(userMessage.content);
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `error-${Date.now()}`,
-          type: "system",
-          content: `Помилка: ${
-            error instanceof Error
-              ? error.message
-              : "Не вдалося згенерувати SVG. Будь ласка, спробуйте ще раз."
-          }`,
-        },
-      ]);
+      addMessage({
+        id: `error-${Date.now()}`,
+        type: "system",
+        content: `Помилка: ${
+          error instanceof Error
+            ? error.message
+            : "Не вдалося згенерувати SVG. Будь ласка, спробуйте ще раз."
+        }`,
+      });
 
       toast({
         title: "Помилка",
@@ -92,7 +68,7 @@ export function useChat() {
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    afterFileLoad: () => void
+    afterFileLoad?: () => void
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -109,7 +85,7 @@ export function useChat() {
     const reader = new FileReader();
     reader.onload = (event) => {
       setImageUrl(event.target?.result as string);
-      afterFileLoad();
+      afterFileLoad?.();
     };
     reader.readAsDataURL(file);
   };
@@ -125,5 +101,6 @@ export function useChat() {
     isLoading,
     handleSubmit,
     handleFileChange,
+    clearChat: clearMessages,
   };
 }

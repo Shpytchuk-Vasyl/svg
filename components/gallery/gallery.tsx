@@ -1,6 +1,6 @@
 import { GalleryImage } from "./gallery-image";
-import { GallerySearch } from "@/components/gallery-search";
-import { GalleryPagination } from "@/components/gallery-pagination";
+import { GallerySearch } from "@/components/gallery/gallery-search";
+import { GalleryPagination } from "@/components/gallery/gallery-pagination";
 import { createServerClient } from "@/lib/supabase-server";
 
 type GalleryImage = {

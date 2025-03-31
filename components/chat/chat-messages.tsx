@@ -1,16 +1,19 @@
 "use client";
 
-import { MessagesSquare } from "lucide-react";
+import { Loader2, MessagesSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Message } from "@/hooks/use-chat";
+import { Message } from "@/hooks/use-chat-messages";
 import { useEffect, useRef } from "react";
-
+import { useToast } from "@/components/ui/use-toast";
+import { SvgViewer } from "../svg-viewer";
 interface ChatMessagesProps {
   messages: Message[];
+  isLoading: boolean;
 }
 
-export function ChatMessages({ messages }: ChatMessagesProps) {
+export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -18,7 +21,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
 
   if (messages.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="pt-[20dvh] flex flex-col items-center justify-center text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-500">
         <MessagesSquare className="h-12 w-12 mb-4" />
         <p className="text-lg font-medium">
           Опишіть що ви хочете намалювати...
@@ -33,7 +36,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
         <div
           key={message.id}
           className={cn(
-            "flex animate-in fade-in slide-in-from-bottom-2 duration-300",
+            "flex animate-in fade-in slide-in-from-bottom-40 duration-1000",
             message.type === "user" ? "justify-end" : "justify-start"
           )}
         >
@@ -52,20 +55,32 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
             {message.type === "svg" ? (
               <div className="space-y-2">
                 <p className="text-sm">{message.content}</p>
-                <div className="relative aspect-square w-full bg-background/50 rounded overflow-hidden">
-                  <img
-                    src={message.svgUrl || "/placeholder.svg"}
-                    alt={message.content}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                <SvgViewer
+                  url={message.svgUrl || "/placeholder.svg"}
+                  className="w-full h-full"
+                />
               </div>
             ) : (
-              <p>{message.content}</p>
+              <p
+                onClick={() => {
+                  navigator.clipboard.writeText(message.content);
+                  toast({
+                    title: "Скопійовано",
+                    description: `Текст "${message.content}" був скопійований в буфер обміну`,
+                  });
+                }}
+              >
+                {message.content}
+              </p>
             )}
           </div>
         </div>
       ))}
+      {isLoading && (
+        <div className="flex justify-center items-center">
+          <Loader2 className="h-4 w-4 animate-spin" />
+        </div>
+      )}
       <div ref={messagesEndRef} />
     </div>
   );

@@ -1,8 +1,8 @@
 "use client";
 
 import { useChat } from "@/hooks/use-chat";
-import { ChatMessages } from "@/components/chat-messages";
-import { ChatInput } from "@/components/chat-input";
+import { ChatMessages } from "@/components/chat/chat-messages";
+import { ChatInput } from "@/components/chat/chat-input";
 
 export function ChatInterface() {
   const {
@@ -16,11 +16,12 @@ export function ChatInterface() {
     isLoading,
     handleSubmit,
     handleFileChange,
+    clearChat,
   } = useChat();
 
   return (
-    <div className="grid grid-cols-1 grid-rows-[1fr_auto] h-full">
-      <ChatMessages messages={messages} />
+    <>
+      <ChatMessages messages={messages} isLoading={isLoading} />
       <ChatInput
         input={input}
         setInput={setInput}
@@ -31,7 +32,8 @@ export function ChatInterface() {
         isLoading={isLoading}
         onSubmit={handleSubmit}
         onFileChange={handleFileChange}
+        onClearChat={clearChat}
       />
-    </div>
+    </>
   );
 }
