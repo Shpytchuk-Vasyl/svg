@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useChatMessages } from "./use-chat-messages";
 import { generateSVG } from "@/lib/generator";
 import { useSupabase } from "@/components/supabase-provider";
@@ -23,6 +23,7 @@ export function useChat() {
       id: Date.now().toString(),
       type: "user" as const,
       content: input,
+      created_at: new Date().toISOString(),
     };
 
     addMessage(userMessage);
@@ -36,7 +37,7 @@ export function useChat() {
         id: response.id,
         type: "svg",
         content: input,
-        svgUrl: response.svg_s3_url,
+        image: response,
       });
 
       setImageUrl(null);

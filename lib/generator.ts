@@ -1,6 +1,7 @@
 "use client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { translateToEnglish } from "./translate";
+import { GalleryImageType } from "@/hooks/use-gallery-images";
 
 const URLs = [
   // "https://backend.svg.io", i dont know why get request also dont work
@@ -32,6 +33,7 @@ export async function generateSVG(
   style: string | null,
   imageUrl: string | null,
   supabase: SupabaseClient,
+  translation: string = "",
   retry: number = 0
 ) {
   const {
@@ -39,9 +41,10 @@ export async function generateSVG(
   } = await supabase.auth.getSession();
 
   let index = 0;
-  if (retry) index = Math.floor(Math.random() * URLs.length);
+  if (retry > 0) index = Math.floor(Math.random() * URLs.length);
 
-  const translatedPrompt = await translateToEnglish(prompt);
+  const translatedPrompt =
+    retry > 0 ? translation : await translateToEnglish(prompt);
 
   const response = await fetch(URLs[index] + "/generate-image", {
     method: "POST",
@@ -61,7 +64,14 @@ export async function generateSVG(
 
   if (!result?.success || response.status !== 200) {
     if (retry < 2) {
-      return await generateSVG(prompt, style, imageUrl, supabase, retry + 1);
+      return await generateSVG(
+        prompt,
+        style,
+        imageUrl,
+        supabase,
+        translatedPrompt,
+        retry + 1
+      );
     }
     throw new Error(
       "Швидше за все сервіс для генерації заблокував вашу IP адресу. Якщо ви використовуєте мобільний інтернет, увімкніть режим польоту на кілька хвилин - це змінить вашу IP адресу. Також можна використати VPN або почекати до завтра. Блокування діє приблизно 24 години."
@@ -89,7 +99,7 @@ export async function generateSVG(
   const imageInfoJSON = await imageInfo.json();
   const imageInfoData = imageInfoJSON.data as ImageGetResponse;
 
-  const { data: imageData, error: imageError } = await supabase
+  const { error: imageError } = await supabase
     .from("generated_images")
     .insert({
       prompt_id: promptData.id,
@@ -102,5 +112,17 @@ export async function generateSVG(
     await supabase.from("prompts").delete().eq("id", promptData.id);
   }
 
-  return imageInfoData;
+  return {
+    created_at: promptData.created_at,
+    svg_url: imageInfoData.svg_s3_url,
+    id: imageInfoData.id,
+    prompts: {
+      id: promptData.id,
+      prompt_text: prompt,
+      image_url:
+        (generatedImage as any)?.pngUrl || generatedImage.png_s3_url || null,
+      style: style || "FLAT_VECTOR",
+      user_id: session?.user?.id || null,
+    },
+  } as GalleryImageType;
 }

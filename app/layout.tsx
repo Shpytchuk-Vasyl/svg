@@ -1,6 +1,6 @@
 import type React from "react";
 import { Inter } from "next/font/google";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SupabaseProvider } from "@/components/supabase-provider";
@@ -10,12 +10,17 @@ import RegisterServiceWorker from "./register-sw";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#ffffff",
+};
+
 export const metadata: Metadata = {
   title: "Love You",
   description: "Створюй красиві анімовані SVG",
   manifest: "/manifest.json",
-  themeColor: "#ffffff",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   icons: {
     icon: "/logo.svg",
   },

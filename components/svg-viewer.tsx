@@ -53,15 +53,13 @@ export function SvgViewer({ url, className, reload }: SvgViewerProps) {
   }, [url]);
 
   useEffect(() => {
-    setTimeout(() => {
-      const paths = divRef.current?.querySelectorAll("path");
-      paths?.forEach(function (path) {
-        const length = path.getTotalLength();
-        path.style.strokeDasharray = length.toString();
-        path.style.strokeDashoffset = length.toString();
-        path.style.animation = "drawStroke 6s ease-in-out";
-      });
-    }, 100);
+    const paths = divRef.current?.querySelectorAll("path");
+    paths?.forEach(function (path) {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = length.toString();
+      path.style.strokeDashoffset = length.toString();
+      path.style.animation = "drawStroke 6s ease-in-out";
+    });
   }, [svgContent, reload]);
 
   if (!svgContent) {

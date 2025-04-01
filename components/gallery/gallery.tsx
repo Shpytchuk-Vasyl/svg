@@ -2,19 +2,7 @@ import { GalleryImage } from "./gallery-image";
 import { GallerySearch } from "@/components/gallery/gallery-search";
 import { GalleryPagination } from "@/components/gallery/gallery-pagination";
 import { createServerClient } from "@/lib/supabase-server";
-
-type GalleryImage = {
-  id: string;
-  svg_url: string;
-  created_at: string;
-  prompts: {
-    id: string;
-    prompt_text: string;
-    image_url: string | null;
-    style: string;
-    user_id: string | null;
-  };
-};
+import { useGalleryImages } from "@/hooks/use-gallery-images";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -64,17 +52,7 @@ export async function Gallery({
     query = query.ilike("prompts.prompt_text", `%${search}%`);
   }
 
-  const {
-    data: images,
-    count,
-    error,
-  } = (await query
-    .order("created_at", { ascending: false })
-    .range(start, end)) as {
-    data: GalleryImage[] | null;
-    count: number | null;
-    error: any;
-  };
+  const { images, count, error } = await useGalleryImages(query, start, end);
 
   if (error) {
     return (
@@ -89,7 +67,7 @@ export async function Gallery({
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
   return (
-    <div className="space-y-4">
+    <>
       <GallerySearch search={search} />
 
       {!images || images.length === 0 ? (
@@ -98,18 +76,18 @@ export async function Gallery({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="flex overflow-y-auto w-full flex-wrap gap-4 justify-around">
             {images.map((image) => (
-              <GalleryImage
+              <div
                 key={image.id}
-                id={image.id}
-                svg_url={image.svg_url}
-                prompt_text={image.prompts?.prompt_text}
-                style={image.prompts?.style}
-                created_at={image.created_at}
-                image_url={image.prompts?.image_url || ""}
-                initial={initialSVg === image.id}
-              />
+                className="size-[320px] xl:size-[400px]"
+              >
+                <GalleryImage
+                  image={image}
+                  initial={initialSVg === image.id}
+                  isUserGallery={isUserGallery}
+                />
+              </div>
             ))}
           </div>
 
@@ -122,6 +100,6 @@ export async function Gallery({
           )}
         </>
       )}
-    </div>
+    </>
   );
 }

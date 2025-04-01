@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Image from "next/image";
 
 export const STYLES = [
   { value: "FLAT_VECTOR", label: "Плоский вектор" },
@@ -64,10 +65,12 @@ export function ChatInput({
       <div className="mx-auto max-w-4xl">
         {imageUrl && (
           <div className="mb-4 relative size-16 rounded-lg overflow-hidden border animate-in zoom-in duration-300">
-            <img
+            <Image
               src={imageUrl}
               alt="Upload preview"
               className="w-full h-full object-cover"
+              width={64}
+              height={64}
             />
             <Button
               onClick={() => setImageUrl(null)}

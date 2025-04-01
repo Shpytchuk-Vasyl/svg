@@ -4,8 +4,9 @@ import { Loader2, MessagesSquare, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Message } from "@/hooks/use-chat-messages";
 import { useEffect, useRef, useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { SvgViewer } from "../svg-viewer";
+import { SVGViewerModal } from "../svg/svg-modal";
 interface ChatMessagesProps {
   messages: Message[];
   isLoading: boolean;
@@ -83,12 +84,13 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
 
 const SVG = ({ message }: { message: Message }) => {
   const [key, setKey] = useState(1);
+  const [isSelected, setIsSelected] = useState(false);
+  console.log(message);
   return (
-    <div className="space-y-2">
-      <p className="text-sm flex items-center justify-between">
-        {message.content}
+    <div className="cursor-pointer" onClick={() => setIsSelected(true)}>
+      <p className="relative">
         <RotateCw
-          className="w-4 h-4"
+          className="w-4 h-4 absolute top-4 right-4"
           onClick={() => {
             setKey(key + 1);
           }}
@@ -96,8 +98,16 @@ const SVG = ({ message }: { message: Message }) => {
       </p>
       <SvgViewer
         reload={key}
-        url={message.svgUrl || "/placeholder.svg"}
+        url={message.image?.svg_url || "/placeholder.svg"}
         className="w-full h-full"
+      />
+      <SVGViewerModal
+        isUserGallery={false}
+        isSelected={isSelected}
+        setIsSelected={setIsSelected}
+        image={message.image!}
+        setReloadTriger={setKey}
+        reloadTriger={key}
       />
     </div>
   );

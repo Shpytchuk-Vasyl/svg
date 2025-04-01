@@ -11,7 +11,6 @@ self.addEventListener("install", (event) => {
         "/",
         "/manifest.json",
         "/logo.svg",
-        "my",
         "/gallery",
         "/my-images",
       ]);

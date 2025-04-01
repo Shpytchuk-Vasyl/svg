@@ -1,11 +1,12 @@
 "use client";
 import { useState, useLayoutEffect } from "react";
+import { GalleryImageType } from "./use-gallery-images";
 
 export type Message = {
   id: string;
   type: "system" | "user" | "svg";
   content: string;
-  svgUrl?: string;
+  image?: GalleryImageType;
 };
 
 type ChatStorage = {
@@ -13,7 +14,7 @@ type ChatStorage = {
   lastMessageTimestamp: number;
 };
 
-export const STORAGE_KEY = "chat_messages";
+export const STORAGE_KEY = "chat_messages_v1";
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 function getInitialMessages() {
