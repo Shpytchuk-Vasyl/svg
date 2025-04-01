@@ -4,13 +4,16 @@ const CACHE_NAME = "svg-generator-v1";
 
 // Add all static assets to cache during installation
 self.addEventListener("install", (event) => {
+  console.log("Installing service worker");
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll([
         "/",
         "/manifest.json",
-        "/icon-192.png",
-        "/icon-512.png",
+        "/logo.svg",
+        "my",
+        "/gallery",
+        "/my-images",
       ]);
     })
   );
@@ -32,7 +35,15 @@ self.addEventListener("fetch", (event) => {
       })
       .catch(() => {
         // If network request fails, try to get it from the cache
-        return caches.match(event.request);
+        // if it fails, return error
+        return caches.match(event.request).then((response) => {
+          if (response) {
+            return response;
+          }
+          return new Response("Схоже на те що ви у офлайн режимі", {
+            status: 404,
+          });
+        });
       })
   );
 });

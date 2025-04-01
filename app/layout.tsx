@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SupabaseProvider } from "@/components/supabase-provider";
 import Navigation from "@/components/navigation";
 import "./globals.css";
+import RegisterServiceWorker from "./register-sw";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,10 +24,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  worker,
 }: {
   children: React.ReactNode;
-  worker?: React.ReactNode;
 }) {
   return (
     <html lang="uk" suppressHydrationWarning>
@@ -42,7 +41,7 @@ export default function RootLayout({
             </main>
             <Navigation />
             <Toaster />
-            {worker}
+            <RegisterServiceWorker />
           </SupabaseProvider>
         </ThemeProvider>
       </body>

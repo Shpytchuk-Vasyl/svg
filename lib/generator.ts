@@ -38,75 +38,69 @@ export async function generateSVG(
     data: { session },
   } = await supabase.auth.getSession();
 
-  try {
-    let index = 0;
-    if (retry) index = Math.floor(Math.random() * URLs.length);
+  let index = 0;
+  if (retry) index = Math.floor(Math.random() * URLs.length);
 
-    const translatedPrompt = await translateToEnglish(prompt);
+  const translatedPrompt = await translateToEnglish(prompt);
 
-    const response = await fetch(URLs[index] + "/generate-image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userPrompt: translatedPrompt,
-        userNegativePrompt: "",
-        style: style || "FLAT_VECTOR",
-        initialImage: imageUrl || null,
-        initialImageType: imageUrl ? "PNG" : null,
-      }),
-    });
+  const response = await fetch(URLs[index] + "/generate-image", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userPrompt: translatedPrompt,
+      userNegativePrompt: "",
+      style: style || "FLAT_VECTOR",
+      initialImage: imageUrl || null,
+      initialImageType: imageUrl ? "PNG" : null,
+    }),
+  });
 
-    const result = await response.json();
+  const result = await response.json();
 
-    if (!result?.success || response.status !== 200) {
-      if (retry < 2) {
-        return await generateSVG(prompt, style, imageUrl, supabase, retry + 1);
-      }
-      throw new Error(
-        "Швидше за все сервіс для генерації заблокував вашу IP адресу. Якщо ви використовуєте мобільний інтернет, увімкніть режим польоту на кілька хвилин - це змінить вашу IP адресу. Також можна використати VPN або почекати до завтра. Блокування діє приблизно 24 години."
-      );
+  if (!result?.success || response.status !== 200) {
+    if (retry < 2) {
+      return await generateSVG(prompt, style, imageUrl, supabase, retry + 1);
     }
-
-    const generatedImage = result.data[0] as ImagePostResponse;
-
-    // Save to database
-    const { data: promptData, error: promptError } = await supabase
-      .from("prompts")
-      .insert({
-        user_id: session?.user?.id || null,
-        prompt_text: prompt,
-        image_url:
-          (generatedImage as any)?.pngUrl || generatedImage.png_s3_url || null,
-        style: style || "FLAT_VECTOR",
-        response_id: generatedImage.id,
-      })
-      .select()
-      .single();
-
-    const imageInfo = await fetch(`/api/get-image/${generatedImage.id}`);
-
-    const imageInfoJSON = await imageInfo.json();
-    const imageInfoData = imageInfoJSON.data as ImageGetResponse;
-
-    console.log(imageInfoData);
-    const { data: imageData, error: imageError } = await supabase
-      .from("generated_images")
-      .insert({
-        prompt_id: promptData.id,
-        svg_url: (imageInfoData as any).svgUrl || imageInfoData.svg_s3_url,
-      })
-      .select()
-      .single();
-
-    if (imageError || promptError) {
-      console.log(imageError, promptError);
-      throw new Error();
-    }
-
-    return imageInfoData;
-  } catch (error) {
-    throw new Error("Ой не вдалось згенерувати SVG");
+    throw new Error(
+      "Швидше за все сервіс для генерації заблокував вашу IP адресу. Якщо ви використовуєте мобільний інтернет, увімкніть режим польоту на кілька хвилин - це змінить вашу IP адресу. Також можна використати VPN або почекати до завтра. Блокування діє приблизно 24 години."
+    );
   }
+
+  const generatedImage = result.data[0] as ImagePostResponse;
+
+  // Save to database
+  const { data: promptData, error: promptError } = await supabase
+    .from("prompts")
+    .insert({
+      user_id: session?.user?.id || null,
+      prompt_text: prompt,
+      image_url:
+        (generatedImage as any)?.pngUrl || generatedImage.png_s3_url || null,
+      style: style || "FLAT_VECTOR",
+      response_id: generatedImage.id,
+    })
+    .select()
+    .single();
+
+  const imageInfo = await fetch(`/api/get-image/${generatedImage.id}`);
+
+  const imageInfoJSON = await imageInfo.json();
+  const imageInfoData = imageInfoJSON.data as ImageGetResponse;
+
+  const { data: imageData, error: imageError } = await supabase
+    .from("generated_images")
+    .insert({
+      prompt_id: promptData.id,
+      svg_url: (imageInfoData as any).svgUrl || imageInfoData.svg_s3_url,
+    })
+    .select()
+    .single();
+
+  if (imageError) {
+    await supabase.from("prompts").delete().eq("id", promptData.id);
+  }
+
+  return imageInfoData;
 }
