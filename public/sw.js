@@ -39,9 +39,14 @@ self.addEventListener("fetch", (event) => {
           if (response) {
             return response;
           }
-          return new Response("Схоже на те що ви у офлайн режимі", {
-            status: 404,
-          });
+          return new Response(
+            {
+              message: "Схоже на те що ви у офлайн режимі",
+            },
+            {
+              status: 404,
+            }
+          );
         });
       })
   );
