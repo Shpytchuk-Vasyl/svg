@@ -17,7 +17,12 @@ export function SvgViewer({ url, className, reload }: SvgViewerProps) {
     const fetchSvg = async () => {
       try {
         const response = await fetch(url);
-        const svgText = await response.text();
+        let svgText = "";
+        if (response.ok) {
+          svgText = await response.text();
+        } else {
+          svgText = (await response.json()).message;
+        }
         // Create a temporary div to parse the SVG
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = svgText;

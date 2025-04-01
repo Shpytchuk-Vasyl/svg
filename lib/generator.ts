@@ -62,6 +62,10 @@ export async function generateSVG(
 
   const result = await response.json();
 
+  if (result.offline) {
+    throw new Error(result.message);
+  }
+
   if (!result?.success || response.status !== 200) {
     if (retry < 2) {
       return await generateSVG(

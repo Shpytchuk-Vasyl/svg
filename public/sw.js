@@ -1,6 +1,6 @@
 // This is the service worker for PWA functionality
 
-const CACHE_NAME = "svg-generator-v1";
+const CACHE_NAME = "svg-generator-v2";
 
 // Add all static assets to cache during installation
 self.addEventListener("install", (event) => {
@@ -40,11 +40,16 @@ self.addEventListener("fetch", (event) => {
             return response;
           }
           return new Response(
+            JSON.stringify({
+              message:
+                "Схоже на те що ви у офлайн режимі. Будь ласка, перевірте ваш інтернет-з'єднання",
+              offline: true,
+            }),
             {
-              message: "Схоже на те що ви у офлайн режимі",
-            },
-            {
-              status: 404,
+              status: 503,
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
           );
         });
