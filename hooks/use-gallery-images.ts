@@ -1,4 +1,4 @@
-export type GalleryImageType = {
+export type GalleryImage = {
   id: string;
   svg_url: string;
   created_at: string;
@@ -23,7 +23,7 @@ export const useGalleryImages = async (
   } = (await query
     .order("created_at", { ascending: false })
     .range(start, end)) as {
-    data: GalleryImageType[] | null;
+    data: GalleryImage[] | null;
     count: number | null;
     error: any;
   };

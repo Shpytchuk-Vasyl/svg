@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SvgViewer } from "@/components/svg-viewer";
+import { SvgViewer } from "@/components/svg/svg-viewer";
 import { STYLES } from "../chat/chat-input";
 import { GalleryImageMenu } from "../gallery/gallery-image-menu";
 import { GalleryImageType } from "@/hooks/use-gallery-images";

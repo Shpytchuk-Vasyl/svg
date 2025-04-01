@@ -4,7 +4,7 @@ import { GalleryPagination } from "@/components/gallery/gallery-pagination";
 import { createServerClient } from "@/lib/supabase-server";
 import { useGalleryImages } from "@/hooks/use-gallery-images";
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 6;
 
 type GalleryProps = {
   searchParams: {
@@ -51,18 +51,40 @@ export async function Gallery({
   if (search) {
     query = query.ilike("prompts.prompt_text", `%${search}%`);
   }
+  let initialImage = null;
 
-  const { images, count, error } = await useGalleryImages(query, start, end);
-
-  if (error) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        ОЙ, щось пішло не так
-        <br />
-        Перезавантажте сторінку будь-ласка
-      </div>
-    );
+  if (initialSVg && !isUserGallery) {
+    query = query.neq("id", initialSVg);
+    const { data: initialImageData } = await supabase
+      .from("generated_images")
+      .select(
+        `
+      id,
+      created_at,
+      svg_url,
+      prompts!inner (
+        id,
+        prompt_text,
+        image_url,
+        style,
+        user_id
+      )
+    `
+      )
+      .eq("id", initialSVg)
+      .single();
+    initialImage = initialImageData;
   }
+
+  const { images: allImages, count } = await useGalleryImages(
+    query,
+    start,
+    end
+  );
+
+  const images = initialImage
+    ? [initialImage, ...(Array.isArray(allImages) ? allImages : [])]
+    : allImages;
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
@@ -78,10 +100,7 @@ export async function Gallery({
         <>
           <div className="flex overflow-y-auto w-full flex-wrap gap-4 justify-around">
             {images.map((image) => (
-              <div
-                key={image.id}
-                className="size-[320px] xl:size-[400px]"
-              >
+              <div key={image.id} className="size-[320px] xl:size-[400px]">
                 <GalleryImage
                   image={image}
                   initial={initialSVg === image.id}

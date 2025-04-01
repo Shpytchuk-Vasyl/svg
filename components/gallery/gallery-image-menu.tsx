@@ -106,7 +106,7 @@ export function GalleryImageMenu({
         <DropdownMenuItem
           onClick={() => {
             navigator.share({
-              url: `${window.location.origin}/gallery?initial=${image.id}&search=${image.prompts.prompt_text}`,
+              url: `${window.location.origin}/gallery?initial=${image.id}`,
               title: image.prompts.prompt_text,
             });
           }}

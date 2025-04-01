@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Message } from "@/hooks/use-chat-messages";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { SvgViewer } from "../svg-viewer";
+import { SvgViewer } from "../svg/svg-viewer";
 import { SVGViewerModal } from "../svg/svg-modal";
 interface ChatMessagesProps {
   messages: Message[];
