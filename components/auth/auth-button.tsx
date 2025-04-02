@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-import { useSupabase } from "../supabase-provider";
+import { useSupabase } from "../../providers/supabase-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,7 +53,7 @@ export function AuthButton({ user }: { user: any }) {
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="size-10 cursor-pointer hover:opacity-80 transition-opacity">
+            <Avatar className="size-8 cursor-pointer hover:opacity-80 transition-opacity">
               <AvatarImage src={user.user_metadata?.avatar_url || undefined} />
               <AvatarFallback>
                 <User className="size-4" />

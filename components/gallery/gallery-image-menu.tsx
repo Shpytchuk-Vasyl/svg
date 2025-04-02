@@ -16,9 +16,10 @@ import {
   RotateCw,
   Trash,
 } from "lucide-react";
-import { useSupabase } from "../supabase-provider";
+import { useSupabase } from "../../providers/supabase-provider";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { downloadFile } from "@/lib/navigator-utils";
 
 interface GalleryImageMenuProps {
   image: GalleryImageType;
@@ -52,19 +53,6 @@ export function GalleryImageMenu({
     }
   };
 
-  const download = ({ href, linkText }: { href: string; linkText: string }) => {
-    const link = document.createElement("a");
-    link.href = href;
-    link.download = linkText;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast({
-      title: "Зображення завантажено",
-    });
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -83,9 +71,10 @@ export function GalleryImageMenu({
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            download({
+            downloadFile({
               href: image.svg_url,
               linkText: `svg-${image.id}.svg`,
+              toast,
             });
           }}
         >
@@ -94,9 +83,10 @@ export function GalleryImageMenu({
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            download({
+            downloadFile({
               href: image.prompts.image_url!,
               linkText: `image-${image.id}.png`,
+              toast,
             });
           }}
         >

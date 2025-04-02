@@ -1,16 +1,20 @@
 "use client";
-import { useState } from "react";
+import { generateSVG } from "@/api/generator";
 import { useToast } from "@/hooks/use-toast";
-import { useChatMessages } from "./use-chat-messages";
-import { generateSVG } from "@/lib/generator";
-import { useSupabase } from "@/components/supabase-provider";
+import { useChatMessages } from "@/providers/chat-messages";
+import { useSupabase } from "@/providers/supabase-provider";
 
 export function useChat() {
-  const { messages = [], addMessage, clearMessages } = useChatMessages();
-  const [input, setInput] = useState("");
-  const [style, setStyle] = useState("FLAT_VECTOR");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    addMessage,
+    input,
+    setInput,
+    style,
+    imageUrl,
+    setImageUrl,
+    isLoading,
+    setIsLoading,
+  } = useChatMessages();
   const { toast } = useToast();
   const { supabase } = useSupabase();
 
@@ -92,16 +96,7 @@ export function useChat() {
   };
 
   return {
-    messages,
-    input,
-    setInput,
-    style,
-    setStyle,
-    imageUrl,
-    setImageUrl,
-    isLoading,
     handleSubmit,
     handleFileChange,
-    clearChat: clearMessages,
   };
 }

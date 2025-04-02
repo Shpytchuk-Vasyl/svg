@@ -2,11 +2,12 @@ import type React from "react";
 import { Inter } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SupabaseProvider } from "@/components/supabase-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { SupabaseProvider } from "@/providers/supabase-provider";
 import Navigation from "@/components/navigation";
 import "./globals.css";
 import RegisterServiceWorker from "./register-sw";
+import { ChatMessageProvider } from "@/providers/chat-messages";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,14 +40,16 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SupabaseProvider>
-            <main className="flex-1 pb-16">
-              <div className="flex flex-col flex-1 h-[calc(100vh-4rem)] container mx-auto px-4 py-6">
-                {children}
-              </div>
-            </main>
-            <Navigation />
-            <Toaster />
-            <RegisterServiceWorker />
+            <ChatMessageProvider>
+              <main className="flex-1 pb-16">
+                <div className="flex flex-col flex-1 h-[calc(100vh-4rem)] container mx-auto px-4 py-6">
+                  {children}
+                </div>
+              </main>
+              <Navigation />
+              <Toaster />
+              <RegisterServiceWorker />
+            </ChatMessageProvider>
           </SupabaseProvider>
         </ThemeProvider>
       </body>

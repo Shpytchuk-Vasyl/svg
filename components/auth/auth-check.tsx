@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useSupabase } from "@/components/supabase-provider";
+import { useSupabase } from "@/providers/supabase-provider";
 
 export function AuthCheck() {
   const [isLoading, setIsLoading] = useState(false);

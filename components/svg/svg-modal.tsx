@@ -28,7 +28,7 @@ export function SVGViewerModal({
 }: SVGViewerModalProps) {
   return (
     <Dialog open={isSelected} onOpenChange={setIsSelected}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl sm:w-full w-11/12 rounded-md max-h-[90vh] overflow-y-auto">
         <DialogHeader className="flex flex-row gap-4 items-center space-y-0">
           <GalleryImageMenu
             image={image}
@@ -38,25 +38,22 @@ export function SVGViewerModal({
           <DialogTitle>Деталі</DialogTitle>
         </DialogHeader>
 
-        <div className="p-4">
-          <div className="aspect-square w-full bg-background/50 rounded overflow-hidden mb-4 relative">
-            <SvgViewer
-              reload={reloadTriger}
-              url={image.svg_url}
-              className="w-full h-full"
-            />
-          </div>
+        <div className="aspect-square w-full bg-background/50 rounded overflow-hidden mb-4 relative">
+          <SvgViewer
+            reload={reloadTriger}
+            url={image.svg_url}
+            className="w-full h-full"
+          />
+        </div>
 
-          <div className="space-y-2">
-            <p className="font-medium">{image.prompts.prompt_text}</p>
-            <p className="text-sm text-muted-foreground">
-              Стиль:{" "}
-              {STYLES.find((s) => s.value === image.prompts.style)?.label}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Створено: {new Date(image.created_at).toLocaleString("uk-UA")}
-            </p>
-          </div>
+        <div className="space-y-2">
+          <p className="font-medium">{image.prompts.prompt_text}</p>
+          <p className="text-sm text-muted-foreground">
+            Стиль: {STYLES.find((s) => s.value === image.prompts.style)?.label}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Створено: {new Date(image.created_at).toLocaleString("uk-UA")}
+          </p>
         </div>
       </DialogContent>
     </Dialog>

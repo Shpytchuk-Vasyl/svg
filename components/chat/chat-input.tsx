@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
+import { useChatMessages } from "@/providers/chat-messages";
 
 export const STYLES = [
   { value: "FLAT_VECTOR", label: "Плоский вектор" },
@@ -27,33 +28,25 @@ export const STYLES = [
 ];
 
 interface ChatInputProps {
-  input: string;
-  setInput: (value: string) => void;
-  style: string;
-  setStyle: (value: string) => void;
-  imageUrl: string | null;
-  setImageUrl: (value: string | null) => void;
-  isLoading: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onFileChange: (
     e: React.ChangeEvent<HTMLInputElement>,
     afterFileLoad: () => void
   ) => void;
-  onClearChat: () => void;
 }
 
-export function ChatInput({
-  input,
-  setInput,
-  style,
-  setStyle,
-  imageUrl,
-  setImageUrl,
-  isLoading,
-  onSubmit,
-  onFileChange,
-  onClearChat,
-}: ChatInputProps) {
+export function ChatInput({ onSubmit, onFileChange }: ChatInputProps) {
+  const {
+    input,
+    setInput,
+    style,
+    setStyle,
+    imageUrl,
+    setImageUrl,
+    isLoading,
+    clearMessages,
+  } = useChatMessages();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const afterFileLoad = () => {
@@ -123,7 +116,7 @@ export function ChatInput({
                   type="button"
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={onClearChat}
+                  onClick={clearMessages}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Очистити чат
