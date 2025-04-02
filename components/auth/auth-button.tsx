@@ -6,6 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { useSupabase } from "../supabase-provider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOut } from "lucide-react";
 
 export function AuthButton({ user }: { user: any }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,21 +50,35 @@ export function AuthButton({ user }: { user: any }) {
 
   return (
     <div className="flex items-center gap-4">
-      {user && (
-        <Avatar className="size-10">
-          <AvatarImage src={user.user_metadata?.avatar_url || undefined} />
-          <AvatarFallback>
-            <User className="size-4" />
-          </AvatarFallback>
-        </Avatar>
+      {user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="size-10 cursor-pointer hover:opacity-80 transition-opacity">
+              <AvatarImage src={user.user_metadata?.avatar_url || undefined} />
+              <AvatarFallback>
+                <User className="size-4" />
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>
+              {user.user_metadata?.name || user.email}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="cursor-pointer text-destructive"
+            >
+              <LogOut className="mr-2 size-4" />
+              Вийти
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button onClick={handleLogin} disabled={isLoading} variant="outline">
+          {isLoading ? "Вхід..." : "Увійти з Google"}
+        </Button>
       )}
-      <Button
-        onClick={user ? handleLogout : handleLogin}
-        disabled={isLoading}
-        variant="outline"
-      >
-        {isLoading ? "Вхід..." : user ? "Вийти" : "Увійти з Google"}
-      </Button>
     </div>
   );
 }

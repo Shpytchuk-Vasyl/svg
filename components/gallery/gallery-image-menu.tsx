@@ -115,7 +115,10 @@ export function GalleryImageMenu({
           Поділитися
         </DropdownMenuItem>
         {isUserGallery && (
-          <DropdownMenuItem onClick={() => deleteImage(image.prompts.id)}>
+          <DropdownMenuItem
+            onClick={() => deleteImage(image.prompts.id)}
+            className="text-destructive"
+          >
             <Trash className="mr-2 h-4 w-4" />
             Видалити
           </DropdownMenuItem>

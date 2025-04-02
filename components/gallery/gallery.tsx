@@ -4,7 +4,7 @@ import { GalleryPagination } from "@/components/gallery/gallery-pagination";
 import { createServerClient } from "@/lib/supabase-server";
 import { useGalleryImages } from "@/hooks/use-gallery-images";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 12;
 
 type GalleryProps = {
   searchParams: {
@@ -100,7 +100,7 @@ export async function Gallery({
         <>
           <div className="flex overflow-y-auto w-full flex-wrap gap-4 justify-around">
             {images.map((image) => (
-              <div key={image.id} className="size-[320px] xl:size-[400px]">
+              <div key={image.id} className="size-[296px]">
                 <GalleryImage
                   image={image}
                   initial={initialSVg === image.id}

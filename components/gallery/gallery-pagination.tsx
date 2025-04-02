@@ -51,8 +51,8 @@ export function GalleryPagination({
   };
 
   return (
-    <Pagination>
-      <PaginationContent>
+    <Pagination className="translate-y-3">
+      <PaginationContent className="w-full">
         <PaginationItem>
           <PaginationPrevious
             onClick={() => handlePageChange(currentPage - 1)}
@@ -60,16 +60,18 @@ export function GalleryPagination({
           />
         </PaginationItem>
 
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-          <PaginationItem key={page}>
-            <PaginationLink
-              onClick={() => handlePageChange(page)}
-              isActive={currentPage === page}
-            >
-              {page}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
+        <PaginationContent className="overflow-x-auto">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <PaginationItem key={page}>
+              <PaginationLink
+                onClick={() => handlePageChange(page)}
+                isActive={currentPage === page}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+        </PaginationContent>
 
         <PaginationItem>
           <PaginationNext

@@ -1,4 +1,4 @@
-export type GalleryImage = {
+export type GalleryImageType = {
   id: string;
   svg_url: string;
   created_at: string;
