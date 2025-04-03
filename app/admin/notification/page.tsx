@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 import { UsersSelector } from "@/components/admin/user-selector";
 import { NotificationTypeSelector } from "@/components/admin/type-selector";
 import { SendButton } from "@/components/admin/send-button";
@@ -13,7 +13,7 @@ import { MessageFields } from "@/components/admin/message-fields";
 import AdminProvider from "@/providers/admin";
 
 export default async function NotificationDashboard() {
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
 
   const {
     data: { users },

@@ -31,7 +31,6 @@ export async function subscribeUser(sub: {
     const p256dh = sub.keys.p256dh;
     const auth = sub.keys.auth;
 
-    // Шукаємо існуючу підписку з таким endpoint і user_id
     const { data: existingSubscription } = await supabase
       .from("push_subscriptions")
       .select()
@@ -39,12 +38,10 @@ export async function subscribeUser(sub: {
       .eq("user_id", userId)
       .maybeSingle();
 
-    // Якщо підписка вже існує, нічого не робимо
     if (existingSubscription) {
       return { success: true, message: "Підписка вже існує" };
     }
 
-    // Створюємо нову підписку в базі даних
     const { error } = await supabase.from("push_subscriptions").insert({
       user_id: userId,
       endpoint: endpoint,
@@ -68,7 +65,6 @@ export async function unsubscribeUser(endpoint: string) {
   try {
     const supabase = createServerClient();
 
-    // Отримуємо поточного користувача
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -78,7 +74,6 @@ export async function unsubscribeUser(endpoint: string) {
       throw new Error("Користувач не авторизований");
     }
 
-    // Видаляємо підписку з бази даних
     const { error } = await supabase
       .from("push_subscriptions")
       .delete()
@@ -109,19 +104,8 @@ export async function sendNotification({
   try {
     const supabase = createServerClient();
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
-
-    if (!userId) {
-      return { success: false, error: "Користувач не авторизований" };
-    }
-
-    // Отримуємо підписки з бази даних
     let query = supabase.from("push_subscriptions").select("*");
 
-    // Якщо вказаний конкретний користувач, фільтруємо тільки його підписки
     if (targetUserIds?.length) {
       query = query.in("user_id", targetUserIds);
     }
@@ -137,7 +121,6 @@ export async function sendNotification({
       throw new Error("Немає активних підписок");
     }
 
-    // Формуємо об'єкти підписок у потрібному форматі
     const subscriptions = subscriptionsData.map((sub) => ({
       endpoint: sub.endpoint,
       keys: {
@@ -156,7 +139,7 @@ export async function sendNotification({
       subscriptions.map(async (subscription) => {
         try {
           await webpush.sendNotification(subscription, payload);
-          return { success: true, endpoint: subscription.endpoint };
+          return { success: true };
         } catch (error) {
           console.error("Помилка відправки push-повідомлення:", error);
 
@@ -167,7 +150,7 @@ export async function sendNotification({
               .eq("endpoint", subscription.endpoint);
           }
 
-          return { success: false, error, endpoint: subscription.endpoint };
+          return { success: false, error };
         }
       })
     );

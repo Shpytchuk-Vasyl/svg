@@ -6,7 +6,7 @@ export default function AdminPage() {
       <CardHeader>
         <CardTitle>Admin</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-4">
         <Link href="/admin/notification">Notification</Link>
         <Link href="/admin/gallery">Gallery</Link>
       </CardContent>

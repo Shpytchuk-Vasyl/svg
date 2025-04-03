@@ -16,8 +16,8 @@ export type NotificationPayload = {
 const AdminContext = createContext<
   NotificationPayload & {
     setPayload: React.Dispatch<React.SetStateAction<NotificationPayload>>;
-    userIds: string[] | "all";
-    setUserIds: React.Dispatch<React.SetStateAction<string[] | "all">>;
+    userIds: string[];
+    setUserIds: React.Dispatch<React.SetStateAction<string[]>>;
     title: string;
     setTitle: React.Dispatch<React.SetStateAction<string>>;
   }
@@ -25,7 +25,7 @@ const AdminContext = createContext<
   type: NotificationType.GENERAL,
   message: [] as any,
   setPayload: () => {},
-  userIds: "all",
+  userIds: [],
   setUserIds: () => {},
   title: "",
   setTitle: () => {},
@@ -40,7 +40,7 @@ export default function AdminProvider({
     type: NotificationType.GENERAL,
     message: "",
   });
-  const [userIds, setUserIds] = useState<string[] | "all">("all");
+  const [userIds, setUserIds] = useState<string[]>([]);
   const [title, setTitle] = useState<string>("");
   return (
     <AdminContext.Provider

@@ -77,17 +77,22 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("push", function (event) {
   if (event.data) {
     const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: data.icon || "/logo.svg",
-      badge: "/logo.svg",
-      vibrate: [100, 50, 100],
-      data: {
-        dateOfArrival: Date.now(),
-        url: self.location.origin,
-      },
-    };
-    event.waitUntil(self.registration.showNotification(data.title, options));
+
+
+    if (data.type === "add_to_chat") {
+    } else if (data.type === "general") {
+      const options = {
+        body: data.message,
+        icon: data.icon || "/logo.svg",
+        badge: "/logo.svg",
+        vibrate: [100, 50, 100],
+        data: {
+          dateOfArrival: Date.now(),
+          url: self.location.origin,
+        },
+      };
+      event.waitUntil(self.registration.showNotification(data.title, options));
+    }
   }
 });
 

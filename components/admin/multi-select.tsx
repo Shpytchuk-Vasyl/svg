@@ -2,9 +2,23 @@
 
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Command as CommandPrimitive } from "cmdk";
-import { X } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { ChevronsUpDown, X, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Option = {
   value: string;
@@ -21,173 +35,126 @@ interface MultiSelectProps {
 
 export function MultiSelect({
   options,
-  selected,
+  selected = [],
   onChange,
   placeholder = "Виберіть елементи...",
   className,
 }: MultiSelectProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState("");
+  const [searchValue, setSearchValue] = React.useState("");
 
-  const handleUnselect = (item: string) => {
-    onChange(selected.filter((i) => i !== item));
-  };
+  const filteredOptions = searchValue
+    ? options.filter((option) =>
+        option.label.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    : options;
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const input = inputRef.current;
-    if (input) {
-      if (e.key === "Delete" || e.key === "Backspace") {
-        if (input.value === "" && selected.length > 0) {
-          onChange(selected.slice(0, -1));
-        }
-      }
-      if (e.key === "Escape") {
-        input.blur();
-      }
+  const toggleOption = (value: string) => {
+    const isSelected = selected.includes(value);
+
+    if (isSelected) {
+      onChange(selected.filter((item) => item !== value));
+    } else {
+      onChange([...selected, value]);
     }
   };
 
-  // Створення списку всіх елементів, окрім "all"
-  const handleSelectAll = () => {
-    const allValues = options
-      .filter((option) => option.value !== "all")
-      .map((option) => option.value);
-    onChange(allValues);
+  const selectAll = () => {
+    onChange(options.map((option) => option.value));
   };
 
-  const handleClearAll = () => {
+  const clearAll = () => {
     onChange([]);
+    setOpen(false);
   };
 
   const selectedLabels = selected.map(
-    (value) => options.find((opt) => opt.value === value)?.label || value
+    (value) => options.find((option) => option.value === value)?.label || value
   );
 
   return (
-    <Command
-      onKeyDown={handleKeyDown}
-      className={`overflow-visible bg-transparent ${className}`}
-    >
-      <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-        <div className="flex gap-1 flex-wrap">
-          {selected.length > 0 && (
-            <div className="flex flex-wrap gap-1">
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-full justify-between h-auto", className)}
+        >
+          {selected.length > 0 ? (
+            <div className="flex gap-1 items-center flex-wrap">
               {selected.length <= 5 ? (
-                // Показуємо всі бейджі коли їх <= 5
-                selected.map((item) => (
-                  <Badge key={item} variant="secondary" className="mr-1">
-                    {options.find((opt) => opt.value === item)?.label || item}
-                    <button
-                      className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleUnselect(item);
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      onClick={() => handleUnselect(item)}
-                    >
-                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                    </button>
+                selectedLabels.map((label, i) => (
+                  <Badge
+                    key={i}
+                    variant="secondary"
+                    className="mr-1"
+                  >
+                    {label}
                   </Badge>
                 ))
               ) : (
-                // Показуємо сумарний бейдж коли їх більше 5
-                <Badge variant="secondary" className="mr-1">
-                  Вибрано {selected.length} користувачів
-                  <button
-                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onClick={handleClearAll}
-                  >
-                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </button>
+                <Badge variant="secondary">
+                  Вибрано {selected.length}{" "}
+                  {selected.length < 5 ? "користувача" : "користувачів"}
                 </Badge>
               )}
             </div>
+          ) : (
+            <span className="text-muted-foreground">{placeholder}</span>
           )}
-          <CommandPrimitive.Input
-            ref={inputRef}
-            value={inputValue}
-            onValueChange={setInputValue}
-            onBlur={() => setOpen(false)}
-            onFocus={() => setOpen(true)}
-            placeholder={selected.length === 0 ? placeholder : ""}
-            className="ml-2 bg-transparent outline-none placeholder:text-muted-foreground flex-1"
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0" align="start">
+        <Command>
+          <CommandInput
+            placeholder="Пошук..."
+            value={searchValue}
+            onValueChange={setSearchValue}
+            className="border-none focus:ring-0"
           />
-        </div>
-      </div>
-      <div className="relative mt-2">
-        {open && (
-          <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-            <CommandGroup className="h-full overflow-auto max-h-[300px]">
+          <CommandList>
+            <CommandEmpty>Нічого не знайдено.</CommandEmpty>
+            <CommandGroup>
               <CommandItem
-                value="__all"
-                onSelect={handleSelectAll}
-                className="cursor-pointer"
+                onSelect={() => selectAll()}
+                className="flex items-center cursor-pointer"
               >
-                Вибрати всіх
+                <Checkbox
+                  checked={
+                    selected.length === options.length && options.length > 0
+                  }
+                  className="mr-2"
+                  onCheckedChange={() => selectAll()}
+                />
+                <span>Вибрати всіх</span>
               </CommandItem>
               <CommandItem
-                value="__clear"
-                onSelect={handleClearAll}
-                className="cursor-pointer"
+                onSelect={() => clearAll()}
+                className="flex items-center cursor-pointer"
               >
-                Очистити вибір
+                <div className="w-4 h-4 mr-2" />
+                <span>Очистити вибір</span>
               </CommandItem>
-              {options
-                .filter((opt) => opt.value !== "all") // Виключаємо "all" з варіантів для вибору
-                .map((option) => {
-                  const isSelected = selected.includes(option.value);
-                  return (
-                    <CommandItem
-                      key={option.value}
-                      value={option.value}
-                      onSelect={() => {
-                        if (isSelected) {
-                          onChange(selected.filter((s) => s !== option.value));
-                        } else {
-                          onChange([...selected, option.value]);
-                        }
-                        setInputValue("");
-                      }}
-                    >
-                      <div
-                        className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary ${
-                          isSelected
-                            ? "bg-primary text-primary-foreground"
-                            : "opacity-50"
-                        }`}
-                      >
-                        {isSelected && <Check className="h-3 w-3" />}
-                      </div>
-                      {option.label}
-                    </CommandItem>
-                  );
-                })}
+              {filteredOptions.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  onSelect={() => toggleOption(option.value)}
+                  className="flex items-center cursor-pointer"
+                >
+                  <Checkbox
+                    checked={selected.includes(option.value)}
+                    className="mr-2"
+                    onCheckedChange={() => toggleOption(option.value)}
+                  />
+                  <span>{option.label}</span>
+                </CommandItem>
+              ))}
             </CommandGroup>
-          </div>
-        )}
-      </div>
-    </Command>
-  );
-}
-function Check(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

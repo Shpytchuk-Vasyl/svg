@@ -19,7 +19,7 @@ export function SendButton() {
       setLoading(true);
 
       // Формуємо параметри для запиту в залежності від типу вибору користувачів
-      const targetParams = userIds === "all" ? {} : { targetUserIds: userIds };
+      const targetParams = userIds.length > 0 ? { targetUserIds: userIds } : {};
 
       const result = await sendNotification({
         message: {
