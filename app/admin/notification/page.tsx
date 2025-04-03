@@ -32,7 +32,7 @@ export default async function NotificationDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <UsersSelector users={users || []} />
 
               <NotificationTypeSelector />

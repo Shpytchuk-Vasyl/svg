@@ -78,11 +78,10 @@ self.addEventListener("push", function (event) {
   if (event.data) {
     const data = event.data.json();
 
-
-    if (data.type === "add_to_chat") {
-    } else if (data.type === "general") {
+    if (data.body.type === "add_to_chat") {
+    } else if (data.body.type === "general") {
       const options = {
-        body: data.message,
+        body: data.body.message,
         icon: data.icon || "/logo.svg",
         badge: "/logo.svg",
         vibrate: [100, 50, 100],
