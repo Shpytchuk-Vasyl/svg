@@ -15,8 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut } from "lucide-react";
+import { PushNotificationManager } from "@/components/push-notification-manager";
+import { UserMetadata } from "@supabase/supabase-js";
 
-export function AuthButton({ user }: { user: any }) {
+export function AuthButton({ user }: { user: UserMetadata }) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { supabase } = useSupabase();
@@ -64,6 +66,10 @@ export function AuthButton({ user }: { user: any }) {
             <DropdownMenuLabel>
               {user.user_metadata?.name || user.email}
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <PushNotificationManager />
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}

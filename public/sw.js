@@ -41,8 +41,8 @@ self.addEventListener("fetch", (event) => {
           }
           return new Response(
             JSON.stringify({
-              message:
-                "Схоже на те що ви у офлайн режимі. Будь ласка, перевірте ваш інтернет-з'єднання",
+              message: "Схоже на те що ви у офлайн режимі",
+              success: false,
               offline: true,
             }),
             {
@@ -69,6 +69,45 @@ self.addEventListener("activate", (event) => {
           }
         })
       );
+    })
+  );
+});
+
+// Обробка пуш-повідомлень
+self.addEventListener("push", function (event) {
+  if (event.data) {
+    const data = event.data.json();
+    const options = {
+      body: data.body,
+      icon: data.icon || "/logo.svg",
+      badge: "/logo.svg",
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        url: self.location.origin,
+      },
+    };
+    event.waitUntil(self.registration.showNotification(data.title, options));
+  }
+});
+
+// Обробка кліків на повідомлення
+self.addEventListener("notificationclick", function (event) {
+  console.log("Notification click received.");
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window" }).then(function (clientList) {
+      // Якщо вікно вже відкрите - фокусуємось на ньому
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url === event.notification.data.url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      // Якщо вікно закрите - відкриваємо
+      if (clients.openWindow) {
+        return clients.openWindow(event.notification.data.url);
+      }
     })
   );
 });

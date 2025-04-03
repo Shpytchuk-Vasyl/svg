@@ -12,7 +12,6 @@ export default function HomePage() {
   return (
     <>
       <div className="flex z-10 justify-between items-center sticky top-4 bg-background pb-4">
-        <Image src="/logo.svg" alt="logo" width={40} height={40} />
         <AuthButtonWrapper />
       </div>
       <ChatInterface />
