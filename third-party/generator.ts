@@ -108,6 +108,7 @@ export async function generateSVG(
     .insert({
       prompt_id: promptData.id,
       svg_url: (imageInfoData as any).svgUrl || imageInfoData.svg_s3_url,
+      id: generatedImage.id,
     })
     .select()
     .single();
