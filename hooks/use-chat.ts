@@ -1,5 +1,5 @@
 "use client";
-import { generateSVG } from "@/api/generator";
+import { generateSVG } from "@/third-party/generator";
 import { useToast } from "@/hooks/use-toast";
 import { useChatMessages } from "@/providers/chat-messages";
 import { useSupabase } from "@/providers/supabase-provider";

@@ -1,6 +1,6 @@
 // This is the service worker for PWA functionality
 
-const CACHE_NAME = "svg-generator-v1";
+const CACHE_NAME = "svg-generator-v3";
 
 // Add all static assets to cache during installation
 self.addEventListener("install", (event) => {
